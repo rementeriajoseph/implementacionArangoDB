@@ -1,0 +1,8 @@
+FOR stop_time IN stop_times
+    FOR trip IN trips
+    FILTER trip._id == stop_time._from
+    COLLECT id = trip._id INTO test
+    FOR route IN 1 INBOUND id contains
+    SORT MAX(test[*].stop_time.shape_dist_traveled) DESC
+    LIMIT 1
+    RETURN DISTINCT {routeId: route._id}

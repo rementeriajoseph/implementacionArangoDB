@@ -1,0 +1,16 @@
+let id1 = 'stops/13170'
+let id2 = 'stops/175'
+
+let busqueda = (
+    FOR trip IN trips
+    FOR stop_time IN stop_times
+        FILTER trip._id == stop_time._from
+        AND (stop_time._to == id1 OR stop_time._to == id2)
+        COLLECT tripId = trip._id INTO viajes
+        FILTER COUNT(viajes[*].stop_time) != 2
+        FOR route IN 1 INBOUND tripId contains
+            FOR fare IN 1 OUTBOUND route fare_rules
+                return DISTINCT fare.price
+)
+
+RETURN MIN(busqueda)

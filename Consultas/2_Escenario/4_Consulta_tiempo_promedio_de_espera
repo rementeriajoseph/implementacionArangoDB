@@ -1,0 +1,26 @@
+// ** PARAMETROS ** //
+let horaActual = "07:30:00" //Cambiar por la hora que se desee consultar
+let parada = 'stops/45' //Cambiar por la parada que se desee consultar
+// ** PARAMETROS ** //
+
+let tiempoActual = CONCAT("2019-01-01T", horaActual)
+LET horas = (
+FOR trip, st IN 1 INBOUND parada stop_times
+    let hora = CONCAT("2019-01-01T", st.arrival_time)
+    filter hora >= tiempoActual //Me deja las horas mayores o iguales a la que busco.
+    
+    for ruta IN 1 INBOUND trip._id contains //Encuentro la ruta que se conecta a cada uno de estos trips
+        COLLECT rutaId = ruta._id INTO horasByRuta //Agrupo por ruta 
+    return MIN(horasByRuta[*].hora) //Devuelvo la hora mínima siguiente a la hora por parámetros
+)
+
+let diferencias = (
+    for hora in horas
+        let laHora = DATE_TIMESTAMP(hora)
+        let TimeStampActual = DATE_TIMESTAMP(tiempoActual)
+        
+        let duracion = DATE_DIFF(laHora, TimeStampActual, "i", true) //Diff en minutos
+        return duracion
+)
+
+return ABS(AVERAGE(diferencias)) //Devuelvo promedio

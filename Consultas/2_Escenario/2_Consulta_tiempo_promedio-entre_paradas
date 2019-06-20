@@ -1,0 +1,32 @@
+// stops/13170
+// stops/175
+
+let stop1 = "stops/13170" //Cambiar esto por los stops que se quieran
+let stop2 = "stops/175"
+let duraciones = (
+    for t in trips
+        let st1 = (
+        for st in stop_times
+            filter st._from == t._id AND st._to == stop1
+            limit 1
+            return st.arrival_time)
+        
+        let st2 = (
+        for st in stop_times
+            filter st._from == t._id AND st._to == stop2
+            limit 1
+            return st.arrival_time)
+        
+        filter COUNT(st1) != 0 AND COUNT(st2) != 0
+        
+        let sts = Append(st1, st2)
+        
+        let t1 = DATE_TIMESTAMP(CONCAT("2019-01-01T", (sts[0])))
+        let t2 = DATE_TIMESTAMP(CONCAT("2019-01-01T", (sts[1])))
+        
+        let duracion = DATE_DIFF(t1, t2, "i", true)
+        
+        return duracion
+)
+
+return AVERAGE(duraciones)
