@@ -1,0 +1,30 @@
+LET stop1 = 'stops/45'
+LET stop2 = 'stops/1'
+
+LET tripsByRoute = (
+    FOR route IN routes
+        LET trip = (
+            FOR relation IN contains
+                FILTER route._id == relation._from
+                LIMIT 1
+                FOR trip IN trips
+                    FILTER trip._id == relation._to
+                    RETURN trip._id
+        )[0]
+        LET stopsByTrip = (
+            FOR tripStop IN trips
+                FILTER tripStop._id == trip
+                FOR stop IN 1 OUTBOUND tripStop stop_times
+                    RETURN stop._id
+        )
+        RETURN trip
+)
+LET cuenta = COUNT (
+    FOR trip IN tripsByRoute 
+        FOR stop IN 1 OUTBOUND trip stop_times
+            FILTER stop._id == stop1 OR stop._id == stop2
+                COLLECT tripGrouped = trip INTO stopsByTrip
+                FILTER 2 == COUNT(stopsByTrip[*].stop_times)
+                RETURN tripGrouped
+)
+RETURN cuenta

@@ -1,0 +1,9 @@
+FOR stop IN stops
+    FOR trip IN 1 INBOUND stop stop_times
+    COLLECT stopId = stop._id INTO tripsByStop
+    SORT COUNT(tripsByStop[*].trip._id) DESC
+    LIMIT 1
+    RETURN {
+        stopId,
+        trips: COUNT(tripsByStop[*].trip._id)
+    }

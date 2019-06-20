@@ -1,0 +1,34 @@
+let givenRoute = "routes/1"
+
+let stopsByRoute = (
+FOR route IN routes
+    let trip = (
+        FOR relation IN contains
+            FILTER route._id == relation._from
+            LIMIT 1
+            FOR trip IN trips
+                FILTER trip._id == relation._to
+                RETURN trip._id
+    )[0]
+    let stopsByTrip = (
+        FOR tripStop in trips
+            FILTER tripStop._id == trip
+            FOR stop in 1 OUTBOUND tripStop stop_times
+                return stop._id
+    )
+    RETURN {
+        "route" : route._id,
+        "trip" : trip,
+        "stops" : stopsByTrip
+    }
+)
+
+let stopsGivenRoute = (FOR r IN stopsByRoute
+                          FILTER r.route == givenRoute
+                          return r)[0]
+
+FOR stopByRoute in stopsByRoute
+    
+    LET inter = INTERSECTION(stopByRoute.stops, stopsGivenRoute.stops)
+    FILTER LENGTH(inter) > 4 and stopByRoute.route != givenRoute
+    RETURN stopByRoute.route
