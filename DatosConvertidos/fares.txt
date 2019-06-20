@@ -1,0 +1,7 @@
+_id,_key,agency_id,price,currency_type,payment_method,transfers,transfer_duration
+fares/B,B,TRIMET,2.5,USD,0,,9000
+fares/R,R,TRIMET,2.5,USD,1,,9000
+fares/BR,BR,TRIMET,2.5,USD,0,,9000
+fares/RB,RB,TRIMET,2.5,USD,1,,9000
+fares/AT,AT,TRAM,4.7,USD,1,0,
+fares/SC,SC,PSC,2.0,USD,1,0,

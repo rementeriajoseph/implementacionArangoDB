@@ -1,0 +1,11 @@
+_to,origin_id,_from,contains_id
+fares/B,B,routes/73,B
+fares/R,R,routes/71,R
+fares/BR,B,routes/1,B
+fares/BR,B,routes/2,R
+fares/RB,R,routes/4,B
+fares/RB,R,routes/64,R
+fares/SC,,routes/193,
+fares/SC,,routes/194,
+fares/SC,,routes/195,
+fares/AT,,routes/208,
