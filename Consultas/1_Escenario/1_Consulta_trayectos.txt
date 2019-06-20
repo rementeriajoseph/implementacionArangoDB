@@ -1,67 +1,45 @@
+
 let route = 'routes/1'
 
 let query = (
-            	FOR trip IN 1 OUTBOUND route contains
-            	let times = (
-                	FOR stop, edge IN 1 OUTBOUND trip stop_times
-                    	//FILTER trip._id == 'trips/8931472'
-                   	 
-                        	RETURN DISTINCT{ tiempo: edge.arrival_time, id:trip._id })
-                       	 
-            	let timesTotal = (
-                	RETURN COUNT(times)
-            	)
-           	 
-            	let scheduleList = (
-                	FOR i IN [times[0],times[timesTotal - 1]]
-                	RETURN i
-            	)
-           	 
-           	 
-           	 
-            	let t1 = DATE_TIMESTAMP(CONCAT("2019-01-01T", (scheduleList[0].tiempo)))
-            	let t2 = DATE_TIMESTAMP(CONCAT("2019-01-01T", (scheduleList[1].tiempo)))
-           	 
-            	let difference = (RETURN {
-                                	minutes:DATE_DIFF(t1, t2, "i", true),
-                                	id: trip._id
-                            	})
-           	 
-           	 
-           	 
-           	 
-            	//let avg = AVERAGE(difference.minutes)
-           	 
-           	 
-            	RETURN difference
-           	 
-           	 
-            	)
-            	//return query
-
-let eltrip = (
-for x in query
-	return x[*].id
-)  	 
-
-
+                FOR trip IN 1 OUTBOUND route contains
+                let times = (
+                    FOR stop, edge IN 1 OUTBOUND trip stop_times                        
+                            RETURN DISTINCT{ tiempo: edge.arrival_time, id:trip._id })
+                            
+                let timesTotal = (
+                    RETURN COUNT(times)
+                )
+                
+                let scheduleList = (
+                    FOR i IN [times[0],times[timesTotal - 1]]
+                    RETURN i
+                )
+                
+                let t1 = DATE_TIMESTAMP(CONCAT("2019-01-01T", (scheduleList[0].tiempo)))
+                let t2 = DATE_TIMESTAMP(CONCAT("2019-01-01T", (scheduleList[1].tiempo)))
+                
+                let difference = (RETURN { 
+                                    minutes:DATE_DIFF(t1, t2, "i", true),
+                                    id: trip._id
+                                })
+                
+                RETURN difference
+                )
 let duraciones = (
 for x in query
-	return x[*].minutes
-)
+    return x[*].minutes
+) 
 
-let mcguiver = (
-	for x in duraciones
+let toAvg = (
+    for x in duraciones
 return x[0]
 )
 
+let avg = (RETURN AVERAGE(toAvg))
 
-let avg = (RETURN AVERAGE(mcguiver))
-//return avg
-return {
-	duracionMax: MAX (
-	for duracion in query
-    	return {as:duracion[*].minutes - avg,p: duracion[*].id}
-	)
-    
-	}
+return  
+    MAX (
+    for duracion in query
+        return {TripId: duracion[*].id, ExtraTime:duracion[*].minutes - avg}
+    )
